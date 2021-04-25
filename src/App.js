@@ -1,57 +1,48 @@
-// import logo from './logo.svg';
-// import './App.css';
+// Using Context For State
+import AppContext from "./components/Context";
 
-import AppContext from './components/Context'
+// Server API
+import { getItemsFromServer, sendItemsToServer } from "./api/Api";
 
+// Components
 import Header from "./components/Header";
 import ShoppingItems from "./components/ShoppingItems";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import AddItem from "./components/AddTask";
 
-// For instances where Server is not available
-const initialShoppingList = [
-  { id: 1, text: "Bread", day: "Feb 5th at 2:30pm", reminder: false },
-  { id: 2, text: "Egg", day: "Feb 10th at 2:30pm", reminder: true },
-  { id: 3, text: "Milk", day: "Feb 5th at 5:30pm", reminder: false },
-];
-
-// let initialShoppingList = [];
-
-
 function App() {
-  const fetchInitalData = async () => {
-    const res = await fetch("http://localhost:5000/data");
-    setShoppingList(await res.json());
+  const [shoppingList, setShoppingList] = useState([]);
+
+  // Initial Fetch After First Page Load
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    const res = await getItemsFromServer();
+    setShoppingList(res);
   };
-  // useEffect(() => {
-  //   fetchInitalData();
-  // }, []);
 
-
-    
-
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [shoppingList, setShoppingList] = useState(initialShoppingList);
   const addItem = (item) => {
-    item.id = Math.floor(Math.random() * 5000 + 1);
-    setShoppingList([...shoppingList, item]);
+    item.id = Math.floor(Math.random() * 5000000 + 1);
+    item.timestamp = Date.now();
+    const new_shoppingList = [...shoppingList, item];
+    setShoppingList(new_shoppingList);
+    sendItemsToServer(new_shoppingList);
+  };
+
+  const removeItem = (item) => {
+    const new_shoppingList = shoppingList.filter((e) => item.id !== e.id);
+    setShoppingList(new_shoppingList);
+    sendItemsToServer(new_shoppingList);
   };
 
   return (
     <div className="container">
-      <Header
-        onAdd={() => {
-          setShowAddTask(!showAddTask);
-        }}
-        addShown={showAddTask}
-        title="Groceries"
-      />
-      {showAddTask && <AddItem addItemHandler={addItem} />}
-
+      <Header title="Groceries" />
+      <AddItem addItemHandler={addItem} />
       <AppContext.Provider value={shoppingList}>
-        <ShoppingItems
-          stateHandler={setShoppingList}
-        />
+        <ShoppingItems removeItemHandler={removeItem} />
       </AppContext.Provider>
     </div>
   );

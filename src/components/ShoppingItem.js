@@ -7,13 +7,12 @@ const ShoppingItem = ({ item, clickHandler, dblClickHandler }) => {
       onDoubleClick={dblClickHandler}
     >
       <h3>
-        {item.text}
+        {item.title}
         <FaTimes
           onClick={clickHandler}
           style={{ color: "red", cursor: "pointer" }}
         />
       </h3>
-      <p>{item.day}</p>
     </div>
   );
 };

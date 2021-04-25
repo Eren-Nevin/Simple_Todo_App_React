@@ -2,32 +2,28 @@ import { useContext } from "react";
 import AppContext from './Context';
 import ShoppingItem from "./ShoppingItem.js";
 
-const ShoppingItems = ({ stateHandler }) => {
+const ShoppingItems = ({ removeItemHandler }) => {
   const shoppingList = useContext(AppContext);
   return (
     <>
       {shoppingList.length === 0 ? <p>There Are No Items</p> : <></>}
-      {shoppingList.map((v) => (
+      {shoppingList.map((item) => (
         <ShoppingItem
-          key={v.id}
-          item={v}
+          key={item.id}
+          item={item}
           clickHandler={() => {
-            stateHandler(
-              shoppingList.filter((item) => {
-                return item.id !== v.id;
-              })
-            );
+            removeItemHandler(item)
           }}
-          dblClickHandler={() => {
-            stateHandler(
-              shoppingList.map((item) => {
-                if (v.id === item.id) {
-                  item.reminder = !item.reminder;
-                }
-                return item;
-              })
-            );
-          }}
+          // dblClickHandler={() => {
+          //   stateHandler(
+          //     shoppingList.map((item) => {
+          //       if (v.id === item.id) {
+          //         item.reminder = !item.reminder;
+          //       }
+          //       return item;
+          //     })
+          //   );
+          // }}
         />
       ))}
     </>
