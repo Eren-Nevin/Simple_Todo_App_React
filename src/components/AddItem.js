@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
 
 const AddItem = ({ addItemHandler }) => {
   const [title, setTitle] = useState("");
@@ -20,6 +21,7 @@ const AddItem = ({ addItemHandler }) => {
       <div className="form-control">
         {/* <label>Item</label> */}
         <input
+            className="text-field"
           type="text"
           placeholder="Add Item"
           value={title}
@@ -27,26 +29,12 @@ const AddItem = ({ addItemHandler }) => {
             setTitle(e.target.value);
           }}
         />
+      <button className="btn btn-block" type="submit">
+          <FaPlus
+              style={{ color: "black", cursor: "pointer"}}
+          />
+          </button>
       </div>
-      {/* <div className="form-control"> */}
-      {/*   <label>Day & Time</label> */}
-      {/*   <input */}
-      {/*     type="text" */}
-      {/*     placeholder="Add Day & Time" */}
-      {/*     value={date} */}
-      {/*     onChange={(e) => setDate(e.target.value)} */}
-      {/*   /> */}
-      {/* </div> */}
-      {/* <div className="form-control form-control-check"> */}
-      {/*   <label>Set Reminder</label> */}
-      {/*   <input */}
-      {/*     type="checkbox" */}
-      {/*     checked={reminder} */}
-      {/*     onChange={(e) => setReminder(e.currentTarget.checked)} */}
-      {/*   /> */}
-      {/* </div> */}
-
-      <input className="btn btn-block" type="submit" value="Save Task" />
     </form>
   );
 };

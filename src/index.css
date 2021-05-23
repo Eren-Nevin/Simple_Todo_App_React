@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap");
 
 * {
   box-sizing: border-box;
@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .container {
@@ -18,6 +18,7 @@ body {
   border: 1px solid steelblue;
   padding: 30px;
   border-radius: 5px;
+  background-color: purple;
 }
 
 .header {
@@ -25,20 +26,35 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  color: white;
+  user-select: none;
+}
+
+.form-control {
+  display: flex;
+  margin: 20px 0;
+  /* height: 2em; */
+  width: 100%;
+}
+
+.text-field {
+  flex: 7;
+  margin: 5px;
+  padding: 12px 10px;
+  /* padding: 3px 7px; */
+  font-size: 17px;
+  border-radius: 4px;
 }
 
 .btn {
   display: inline-block;
-  background: #000;
-  color: #fff;
+  flex: 1;
+  background: white;
+  color: black;
   border: none;
-  padding: 10px 20px;
   margin: 5px;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  text-decoration: none;
-  font-size: 15px;
-  font-family: inherit;
 }
 
 .btn:focus {
@@ -50,61 +66,58 @@ body {
 }
 
 .btn-block {
-  display: block;
+  /* display: block; */
   width: 100%;
 }
 
 .task {
-  background: #f4f4f4;
-  margin: 5px;
-  padding: 10px 20px;
+    display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: ghostwhite;
+  margin: 5px 5px;
+  padding: 15px 15px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.task.reminder {
-  border-left: 5px solid green;
-}
+/* .task.important { */
+/*   border-left: 20px solid yellow; */
+/* } */
 
 .task h3 {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    /* flex: jjj */
+    flex: auto;
+  margin: 4px;
+    font-size: 16px;
+  font-weight: 300;
+  user-select: none;
 }
 
-.add-form {
-  margin-bottom: 40px;
+.task-important-star {
+    /* flex: 1 1 20px; */
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin: 4px
 }
 
-.form-control {
-  margin: 20px 0;
+.task-remove-icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin: 4px
 }
 
-.form-control label {
-  display: block;
-}
+/* .form-control label { */
+/*   display: block; */
+/* } */
 
-.form-control input {
-  width: 100%;
-  height: 40px;
-  margin: 5px;
-  padding: 3px 7px;
-  font-size: 17px;
-}
-
-.form-control-check {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.form-control-check label {
-  flex: 1;
-}
-
-.form-control-check input {
-  flex: 2;
-  height: 20px;
-}
+/* .form-control-check { */
+/*   display: flex; */
+/*   align-items: center; */
+/*   justify-content: space-between; */
+/* } */
 
 footer {
   margin-top: 30px;

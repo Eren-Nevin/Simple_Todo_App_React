@@ -2,7 +2,7 @@ import { useContext } from "react";
 import AppContext from './Context';
 import ShoppingItem from "./ShoppingItem.js";
 
-const ShoppingItems = ({ removeItemHandler }) => {
+const ShoppingItems = ({ removeItemHandler, doubleClickItemHandler }) => {
   const shoppingList = useContext(AppContext);
   return (
     <>
@@ -14,16 +14,9 @@ const ShoppingItems = ({ removeItemHandler }) => {
           clickHandler={() => {
             removeItemHandler(item)
           }}
-          // dblClickHandler={() => {
-          //   stateHandler(
-          //     shoppingList.map((item) => {
-          //       if (v.id === item.id) {
-          //         item.reminder = !item.reminder;
-          //       }
-          //       return item;
-          //     })
-          //   );
-          // }}
+          dblClickHandler={() => {
+              doubleClickItemHandler(item)
+          }}
         />
       ))}
     </>
