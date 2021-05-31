@@ -9,13 +9,10 @@ const AddItem = ({ addItemHandler }) => {
       className="add-form"
       onSubmit={(e) => {
         e.preventDefault();
-        const new_item = {
-          title: title,
-        };
         // Reset Title Form Box To Empty
         setTitle("");
         // Call Handler To Add New Item
-        addItemHandler(new_item);
+        addItemHandler(title, "details", false);
       }}
     >
       <div className="form-control">

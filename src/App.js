@@ -3,7 +3,8 @@
 import AppContext from "./components/Context";
 
 // Server API
-import { getItemsFromServer, sendItemsToServer } from "./api/Api";
+// import { getItemsFromServer, sendItemsToServer } from "./api/Api";
+import * as ViewModel from "./api/ViewModel";
 
 // Components
 import Header from "./components/Header";
@@ -37,38 +38,25 @@ function App() {
 
   // Initial Fetch After First Page Load
   useEffect(() => {
-    fetchItems();
+    ViewModel.getItems().then((v) => {
+      setShoppingList(v);
+    });
   }, []);
 
-  const fetchItems = async () => {
-    const res = await getItemsFromServer();
-    setShoppingList(res);
-  };
+  const addItem = (title, details, important) => {
 
-  const addItem = (item) => {
-    item.id = Math.floor(Math.random() * 5000000 + 1);
-    item.timestamp = Date.now();
-    const new_shoppingList = [...shoppingList, item];
-    setShoppingList(new_shoppingList);
-    sendItemsToServer(new_shoppingList);
+    ViewModel.addNewItem(title, details, important);
+      ViewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   const removeItem = (item) => {
-    const new_shoppingList = shoppingList.filter((e) => item.id !== e.id);
-    setShoppingList(new_shoppingList);
-    sendItemsToServer(new_shoppingList);
+      ViewModel.removeItem(item)
+      ViewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   const toggleItemImportance = (item) => {
-    const new_shoppingList = shoppingList.map((e) => {
-      if (e.id === item.id) {
-        e.important = !e.important;
-          e.timestamp = Date.now()
-      }
-      return e;
-    });
-    setShoppingList(new_shoppingList);
-    sendItemsToServer(new_shoppingList);
+    ViewModel.toggleStarItem(item);
+      ViewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   return (
