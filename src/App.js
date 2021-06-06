@@ -4,7 +4,8 @@ import AppContext from "./components/Context";
 
 // Server API
 // import { getItemsFromServer, sendItemsToServer } from "./api/Api";
-import * as ViewModel from "./api/ViewModel";
+import {ViewModel} from "./api/ViewModel";
+import {getCurrentDay} from "./api/Utilities.js";
 
 // Components
 import Header from "./components/Header";
@@ -12,51 +13,57 @@ import ShoppingItems from "./components/ShoppingItems";
 import { useState, useEffect } from "react";
 import AddItem from "./components/AddItem";
 
-function getCurrentDay() {
-  let currentDate = new Date();
-  let currentDay = currentDate.getDay();
-  switch (currentDay) {
-    case 1:
-      return "Monday";
-    case 2:
-      return "Tuesday";
-    case 3:
-      return "Wednesday";
-    case 4:
-      return "Thursday";
-    case 5:
-      return "Friday";
-    case 6:
-      return "Saturday";
-    case 0:
-      return "Sunday";
-  }
-}
 
+const _viewModel = new ViewModel();
 function App() {
   const [shoppingList, setShoppingList] = useState([]);
 
   // Initial Fetch After First Page Load
-  useEffect(() => {
-    ViewModel.getItems().then((v) => {
-      setShoppingList(v);
-    });
-  }, []);
+  // useEffect(() => {
+    _viewModel.getItemAddedStream().subscribe({ next: (item) => {
+        setShoppingList([item, ...shoppingList]);
+    }});
+    _viewModel.getItemChangedStream().subscribe({ next: (item) => {
+        let newList = shoppingList.map((e) => {
+            if (e.id === item.id){
+                return item;
+            }
+            else {
+                return e;
+            }
+        });
+        setShoppingList(newList);
+    }});
+    _viewModel.getItemRemovedStream().subscribe({ next: (item) => {
+        let newList = shoppingList.filter((e) => e.id !== item.id);
+        setShoppingList(newList);
+    }});
+
+    _viewModel.getResetStream().subscribe({ next: (v) => {
+        setShoppingList(v);
+    }});
+      // _viewModel.start();
+    // _viewModel.getItems().then((v) => {
+    //   setShoppingList(v);
+    // });
+  // }, []);
+    //
+
 
   const addItem = (title, details, important) => {
 
-    ViewModel.addNewItem(title, details, important);
-      ViewModel.syncItems().then((v) => setShoppingList(v));
+    _viewModel.addNewItem(title, details, important);
+      // _viewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   const removeItem = (item) => {
-      ViewModel.removeItem(item)
-      ViewModel.syncItems().then((v) => setShoppingList(v));
+      _viewModel.removeItem(item)
+      // _viewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   const toggleItemImportance = (item) => {
-    ViewModel.toggleStarItem(item);
-      ViewModel.syncItems().then((v) => setShoppingList(v));
+    _viewModel.toggleStarItem(item);
+      // _viewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   return (
