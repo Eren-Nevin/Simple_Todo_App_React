@@ -1,14 +1,14 @@
 import { useContext } from "react";
 import AppContext from './Context';
-import ShoppingItem from "./ShoppingItem.js";
+import ListItem from "./ListItem.js";
 
-const ShoppingItems = ({ removeItemHandler, doubleClickItemHandler }) => {
-  const shoppingList = useContext(AppContext);
+const ItemList = ({ removeItemHandler, doubleClickItemHandler }) => {
+  const itemList = useContext(AppContext);
   return (
     <>
-      {shoppingList.length === 0 ? <p>There Are No Items</p> : <></>}
-      {shoppingList.map((item) => (
-        <ShoppingItem
+      {itemList.length === 0 ? <p>There Are No Items</p> : <></>}
+      {itemList.map((item) => (
+        <ListItem
           key={item.id}
           item={item}
           clickHandler={() => {
@@ -23,4 +23,4 @@ const ShoppingItems = ({ removeItemHandler, doubleClickItemHandler }) => {
   );
 };
 
-export default ShoppingItems;
+export default ItemList;

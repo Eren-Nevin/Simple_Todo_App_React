@@ -1,6 +1,6 @@
 import { FaRegStar, FaStar, FaTimes } from "react-icons/fa";
 
-const ShoppingItem = ({ item, clickHandler, dblClickHandler }) => {
+const ListItem = ({ item, clickHandler, dblClickHandler }) => {
   return (
     <div className="task">
         {item.important ? (
@@ -30,4 +30,4 @@ const ShoppingItem = ({ item, clickHandler, dblClickHandler }) => {
   );
 };
 
-export default ShoppingItem;
+export default ListItem;
