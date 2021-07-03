@@ -7,8 +7,8 @@ class Repository {
   isConnected;
   _currentTransactions = [];
   _pendingTransactions = [];
-  _serverAddress = "https://dinkedpawn.com:9999";
-  // serverAddress = "http://localhost:9999";
+  // _serverAddress = "https://dinkedpawn.com:9999";
+  _serverAddress = "http://localhost:9999";
   _itemAddedInRepositoryStream = new Rx.Subject();
   _itemRemovedInRepositoryStream = new Rx.Subject();
   _itemChangedInRepositoryStream = new Rx.Subject();
@@ -17,8 +17,8 @@ class Repository {
 
   _inboundTransactionStream = new Rx.Subject();
 
-  constructor() {
-    this.createSocketIO();
+  constructor(userToken) {
+    this.createSocketIO(userToken);
   }
 
   // let _currentItemList = [];
@@ -108,8 +108,8 @@ class Repository {
     });
   }
 
-  createSocketIO() {
-    this.socket = io(`${this._serverAddress}/socket.io`, {
+  createSocketIO(userToken) {
+    this.socket = io(`${this._serverAddress}/socket.io?token=${userToken}`, {
       transports: ["websocket"],
       autoConnect: false,
     });
@@ -165,6 +165,7 @@ class Repository {
 
   _addWebSocketOnEventsListeners() {
     // This is called when server pushes a normal (not out of order) transaction to client.
+    console.log("Listening to server sent transactions");
     this.socket.on("send_transaction_to_client", (rawTransaction) => {
       console.log("Received $rawTransaction");
       let transaction = this._rawTransactionDeserializer(rawTransaction);
@@ -234,20 +235,23 @@ class Repository {
   _getItemsFromTransactions(transactionList) {
     let result = [];
     for (var transaction of transactionList) {
+      const transactionItemId = transaction.item.id;
       switch (transaction.type) {
         case "Add":
           result.unshift(transaction.item);
           break;
         case "Modify":
-          result[result.findIndex((e) => e.id === transaction.item.id)] =
+          result[result.findIndex((e) => e.id === transactionItemId)] =
             transaction.item;
           break;
         case "Remove":
           result.splice(
-            result.findIndex((e) => e.id === transaction.item.id),
+            result.findIndex((e) => e.id === transactionItemId),
             1
           );
           break;
+        default:
+          throw Error("Invalid transaction type");
       }
     }
     return result;
@@ -292,6 +296,8 @@ class Repository {
         console.log(`The ${transaction.item.title} is Removed By Repository`);
         this._itemRemovedInRepositoryStream.next(transaction.item);
         break;
+      default:
+        throw Error("Invalid transaction type");
     }
   }
   // async _getDataFromServer() {

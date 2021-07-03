@@ -9,22 +9,24 @@ import { getCurrentDay } from "./api/Utilities.js";
 
 // Components
 import Header from "./components/Header";
-import ItemList from "./components/ShoppingItems";
-import { useState, useEffect } from "react";
+import ItemList from "./components/ItemList";
+import { useState } from "react";
 import AddItem from "./components/AddItem";
 import Authenticate from "./components/Auth";
 
 let _viewModel = null;
+let userToken = '';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(false);
   return (
     <div className="container">
       {authenticated ? (
-        <ListApp />
+        <ListApp userToken={userToken}/>
       ) : (
         <Authenticate
-          successfulAuth={() => {
+          successfulAuth={(token) => {
+              userToken = token;
             setAuthenticated(true);
           }}
         />
@@ -33,63 +35,29 @@ function App() {
   );
 }
 
-function ListApp() {
+function ListApp({userToken}) {
+    console.log(userToken);
   if (_viewModel === null) {
-    _viewModel = new ViewModel();
+    _viewModel = new ViewModel(userToken);
   }
-  const [shoppingList, setShoppingList] = useState([]);
-
-  // Start Listening On Transactions Of Items.
-  _viewModel.getItemAddedStream().subscribe({
-    next: (item) => {
-      setShoppingList([item, ...shoppingList]);
-    },
-  });
-  _viewModel.getItemChangedStream().subscribe({
-    next: (item) => {
-      let newList = shoppingList.map((e) => {
-        if (e.id === item.id) {
-          return item;
-        } else {
-          return e;
-        }
-      });
-      setShoppingList(newList);
-    },
-  });
-  _viewModel.getItemRemovedStream().subscribe({
-    next: (item) => {
-      let newList = shoppingList.filter((e) => e.id !== item.id);
-      setShoppingList(newList);
-    },
-  });
-
-  _viewModel.getResetStream().subscribe({
-    next: (v) => {
-      setShoppingList(v);
-    },
-  });
 
   const addItem = (title, details, important) => {
     _viewModel.addNewItem(title, details, important);
-    // _viewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   const removeItem = (item) => {
     _viewModel.removeItem(item);
-    // _viewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   const toggleItemImportance = (item) => {
     _viewModel.toggleStarItem(item);
-    // _viewModel.syncItems().then((v) => setShoppingList(v));
   };
 
   return (
     <>
       <Header title={`${getCurrentDay()}`} />
       <AddItem addItemHandler={addItem} />
-      <AppContext.Provider value={shoppingList}>
+      <AppContext.Provider value={_viewModel}>
         <ItemList
           removeItemHandler={removeItem}
           doubleClickItemHandler={toggleItemImportance}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const checkLogin = async (email, password) => {
+const login = async (email, password) => {
   const url = "http://127.0.0.1:8833/api/login";
   const data = {
     email: email,
@@ -53,8 +53,8 @@ function Authenticate({ successfulAuth }) {
     <>
       {needSignup ? (
         <Signup
-          successfulSignup={() => {
-            successfulAuth();
+          successfulSignup={(token) => {
+            successfulAuth(token);
           }}
           switchToLogin={() => {
             setNeedSignup(false);
@@ -62,8 +62,8 @@ function Authenticate({ successfulAuth }) {
         />
       ) : (
         <Login
-          successfulLogin={() => {
-            successfulAuth();
+          successfulLogin={(token) => {
+            successfulAuth(token);
           }}
           switchToSignup={() => {
             setNeedSignup(true);
@@ -77,54 +77,65 @@ function Authenticate({ successfulAuth }) {
 function Login({ successfulLogin, switchToSignup }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // Somehow show login errors (e.g. a colored text box, ...)
   const [loginError, setLoginError] = useState("");
 
-  // Make password field not show password by default
-
   return (
-    <form
-      className="auth-form"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        const { message, success } = await checkLogin(email, password);
-        if (success) {
-          successfulLogin(message);
-        } else {
-          // We need to call setToken here
-          console.log(message);
-        }
-      }}
-    >
-      <input
-        className="auth-form-text-field"
-        type="text"
-        name="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
+    <>
+      <form
+        className="auth-form"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const { message, success } = await login(email, password);
+          if (success) {
+            successfulLogin(message);
+          } else {
+            setLoginError(message);
+            console.log(message);
+          }
         }}
-      />
+      >
+        <input
+          className="auth-form-text-field"
+          type="text"
+          name="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+        />
 
-      <input
-        className="auth-form-text-field"
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-        }}
-      />
-      <button type="submit" className="auth-form-button">
-        Login
-      </button>
-      <button type="button" className="auth-form-button"
-          onClick={(e) => {switchToSignup()}}>
-        Signup
-      </button>
-    </form>
+        <input
+          className="auth-form-text-field"
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+        />
+
+        {loginError ? (
+          <p className="auth-error"> Error: {loginError}! </p>
+        ) : (
+          <></>
+        )}
+
+        <button type="submit" className="auth-form-button">
+          Login
+        </button>
+        <button
+          type="button"
+          className="auth-form-button"
+          onClick={(e) => {
+            switchToSignup();
+          }}
+        >
+          Signup
+        </button>
+      </form>
+    </>
   );
 }
 
@@ -132,10 +143,7 @@ function Signup({ successfulSignup, switchToLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [profile, setProfile] = useState("");
-  // Somehow show signup errors (e.g. a colored text box, ...)
   const [signupError, setSignupError] = useState("");
-
-  // Make password field not show password by default
 
   return (
     <form
@@ -144,8 +152,14 @@ function Signup({ successfulSignup, switchToLogin }) {
         e.preventDefault();
         const { message, success } = await signup(email, password, profile);
         if (success) {
-          successfulSignup(message);
+          const { message, success } = await login(email, password);
+          // We know the login would be succesful after signup but we still
+          // check for success for rare cases (Defensive Programming).
+          if (success) {
+            successfulSignup(message);
+          }
         } else {
+          setSignupError(message);
           console.log(message);
         }
       }}
@@ -181,11 +195,21 @@ function Signup({ successfulSignup, switchToLogin }) {
           setProfile(e.target.value);
         }}
       />
+      {signupError ? (
+        <p className="auth-error"> Error: {signupError}! </p>
+      ) : (
+        <></>
+      )}
       <button type="submit" className="auth-form-button">
         Signup
       </button>
-      <button type="button" className="auth-form-button"
-          onClick={(e) => {switchToLogin()}}>
+      <button
+        type="button"
+        className="auth-form-button"
+        onClick={(e) => {
+          switchToLogin();
+        }}
+      >
         Login
       </button>
     </form>

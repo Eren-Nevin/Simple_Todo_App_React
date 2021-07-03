@@ -1,39 +1,25 @@
 import * as Rx from "rxjs";
 import { Repository } from "./Repository.js";
-import { Item } from './Model.js';
+import { Item } from "./Model.js";
 
 class ViewModel {
   _repository;
   _itemAddedStream = new Rx.Subject();
   _itemRemovedStream = new Rx.Subject();
   _itemChangedStream = new Rx.Subject();
-    _resetStream = new Rx.Subject();
+  _resetStream = new Rx.Subject();
   _currentItemList = [];
 
-  constructor() {
+  constructor(userToken) {
     console.log("ViewModel is Created!");
-    this._repository = new Repository();
+    this._repository = new Repository(userToken);
     this._startListeningOnRepository();
     this._repository.start();
   }
 
-    
-
-  async getItems() {
-    // return await this._repository.fetchFromServer()
-    return [];
-  }
-
-  async syncItems() {
-    // await this._repository.syncToServer()
-    // const newItems = await getItems()
-    // return newItems
-    return [];
-  }
-
-getResetStream() {
+  getResetStream() {
     return this._resetStream;
-}
+  }
 
   getItemAddedStream() {
     return this._itemAddedStream;
@@ -65,23 +51,15 @@ getResetStream() {
     this._changeItem(item);
   }
   addNewItem(title, details, important) {
-    // let item = {
-    //   id: Date.now(),
-    //   title: title,
-    //   details: details,
-    //   important: important,
-    //   timestamp: Date.now(),
-    //   arb_order: 0,
-    // };
-
-    let item = new Item(Date.now(), 0, title, details, Date.now(), important);
-
+    const item = new Item(Date.now(), 0, title, details, Date.now(), important);
     this._addItem(item);
   }
   _startListeningOnRepository() {
-      this._repository.getResetStream().subscribe({next: (v) => {
-            this._resetStream.next(v);
-      }});
+    this._repository.getResetStream().subscribe({
+      next: (v) => {
+        this._resetStream.next(v);
+      },
+    });
     this._repository.getItemAddedStream().subscribe({
       next: (item) => {
         console.log(`Adding ${item.title} In ViewModel`);
@@ -93,7 +71,7 @@ getResetStream() {
     this._repository.getItemChangedStream().subscribe({
       next: (item) => {
         console.log(`Changing ${item.title} In ViewModel`);
-        let index = this._currentItemList.findIndex(
+        const index = this._currentItemList.findIndex(
           (element) => element.id === item.id
         );
         this._currentItemList[index] = item;
@@ -107,7 +85,7 @@ getResetStream() {
         // this._currentItemList.remove(item);
         //
         // this._currentItemList.splice(this_currentItemList.)
-        let index = this._currentItemList.findIndex(
+        const index = this._currentItemList.findIndex(
           (element) => element.id === item.id
         );
         this._currentItemList.splice(index, 1);

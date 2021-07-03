@@ -16,7 +16,9 @@ function getCurrentDay() {
       return "Saturday";
     case 0:
       return "Sunday";
+    default:
+      throw Error("Invalid day of the week");
   }
 }
 
-export { getCurrentDay }; 
+export { getCurrentDay };
