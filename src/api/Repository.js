@@ -34,6 +34,10 @@ class Repository {
     this._startListeningOnInputTransactions();
     this.connectWebSocket();
   }
+
+    destructor(){
+        this.socket.disconnect()
+    }
   // These are listened by the viewModel to know when an item is
   // added/removed/changed.
   getItemAddedStream() {

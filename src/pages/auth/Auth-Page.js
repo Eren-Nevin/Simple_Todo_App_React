@@ -1,4 +1,72 @@
+import "./auth-page.css";
 import { useState } from "react";
+import localforage from "localforage";
+
+// TODO: Use create instance
+const localStorage = localforage.createInstance({ name: "userToken" });
+
+async function saveTokenLocally(token) {
+  try {
+    const _savedToken = await localStorage.setItem("userToken", token);
+    console.log(`User Token Saved: ${_savedToken}`);
+    return { success: true, token: _savedToken };
+  } catch (e) {
+    console.log(e);
+    return { success: false, token: "" };
+  }
+}
+
+async function loadTokenLocally() {
+  try {
+    const _loadedToken = await localStorage.getItem("userToken");
+    if (_loadedToken) {
+      console.log(`User Token Loaded: ${_loadedToken}`);
+      return { success: true, token: _loadedToken };
+    } else {
+      return { success: false, token: "" };
+    }
+  } catch (e) {
+    console.log(e);
+    return { success: false, token: "" };
+  }
+}
+
+async function removeTokenLocally(token) {
+  try {
+    await localStorage.removeItem("userToken");
+    console.log(`User Token Removed: ${token}`);
+    return { success: true, token: token };
+  } catch (e) {
+    console.log(e);
+    return { success: false, token: "" };
+  }
+}
+
+async function checkLoggedIn(token) {
+  // const _result = await loadTokenLocally();
+  // if (!_result.success) {
+  //   return _result;
+  // }
+  const url = "http://127.0.0.1:8833/api/check_login";
+  const data = {
+    token: token,
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    // mode: "no-cors",
+    body: JSON.stringify(data),
+  });
+  try {
+    let result = await response.json();
+    return result.success;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 const login = async (email, password) => {
   const url = "http://127.0.0.1:8833/api/login";
@@ -17,6 +85,7 @@ const login = async (email, password) => {
   });
   try {
     let result = await response.json();
+    await saveTokenLocally(result.message);
     return result;
   } catch (e) {
     console.log(e);
@@ -47,10 +116,21 @@ const signup = async (email, password, profile) => {
   return result;
 };
 
-function Authenticate({ successfulAuth }) {
+function AuthenticateApp({ successfulAuth }) {
+  loadTokenLocally().then(({ success, token }) => {
+    if (!success) {
+      return;
+    }
+    checkLoggedIn(token).then((_result) => {
+      if (_result) {
+        console.log(`Checked Login Successful With ${token}`);
+        successfulAuth(token);
+      }
+    });
+  });
   const [needSignup, setNeedSignup] = useState(false);
   return (
-    <>
+    <div className="auth-page-container">
       {needSignup ? (
         <Signup
           successfulSignup={(token) => {
@@ -70,7 +150,7 @@ function Authenticate({ successfulAuth }) {
           }}
         />
       )}
-    </>
+    </div>
   );
 }
 
@@ -94,6 +174,7 @@ function Login({ successfulLogin, switchToSignup }) {
           }
         }}
       >
+        <h5 className="auth-header">Log in</h5>
         <input
           className="auth-form-text-field"
           type="text"
@@ -123,17 +204,17 @@ function Login({ successfulLogin, switchToSignup }) {
         )}
 
         <button type="submit" className="auth-form-button">
-          Login
+            Continue
         </button>
-        <button
-          type="button"
-          className="auth-form-button"
+        <p className="switch-auth-message"> Don't have an account? </p>
+        <a
+          className="switch-auth-link"
           onClick={(e) => {
             switchToSignup();
           }}
         >
-          Signup
-        </button>
+          Sign up
+        </a>
       </form>
     </>
   );
@@ -164,6 +245,7 @@ function Signup({ successfulSignup, switchToLogin }) {
         }
       }}
     >
+        <h5 className="auth-header">Sign up</h5>
       <input
         className="auth-form-text-field"
         type="text"
@@ -201,19 +283,28 @@ function Signup({ successfulSignup, switchToLogin }) {
         <></>
       )}
       <button type="submit" className="auth-form-button">
-        Signup
+       Continue 
       </button>
-      <button
-        type="button"
-        className="auth-form-button"
+      <p className="switch-auth-message"> Already have an account? </p>
+      <a
+        className="switch-auth-link"
         onClick={(e) => {
           switchToLogin();
         }}
       >
-        Login
-      </button>
+        Log in
+      </a>
+      {/* <button */}
+      {/*   type="button" */}
+      {/*   className="auth-form-button" */}
+      {/*   onClick={(e) => { */}
+      {/*     switchToLogin(); */}
+      {/*   }} */}
+      {/* > */}
+      {/*   Login */}
+      {/* </button> */}
     </form>
   );
 }
 
-export default Authenticate;
+export { AuthenticateApp, removeTokenLocally };

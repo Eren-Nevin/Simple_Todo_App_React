@@ -10,15 +10,12 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-.container {
-  max-width: 500px;
-  margin: 30px auto;
+.list-page-container {
+  margin: auto;
   overflow: auto;
-  min-height: 300px;
   border: 1px solid steelblue;
   padding: 30px;
-  border-radius: 5px;
-  background-color: #4154AF;
+  background-color: #4154af;
 }
 
 .header {
@@ -49,12 +46,27 @@ body {
 .btn {
   display: inline-block;
   flex: 1;
-  background: white;
+  background: #73AE57;
   color: black;
   border: none;
   margin: 5px;
-  border-radius: 4px;
+  width:48px;
+  height: 48px;
+  border-radius: 32px;
   cursor: pointer;
+}
+
+.logout-button {
+  display: inline-block;
+  width: 100px;
+  margin: 4px;
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
+  background: #73AE57;
+  color: white;
+  font-weight: 500;
+  font-size: 90%;
 }
 
 .btn:focus {
@@ -71,7 +83,7 @@ body {
 }
 
 .task {
-    display: flex;
+  display: flex;
   align-items: center;
   justify-content: space-between;
   background: ghostwhite;
@@ -86,27 +98,27 @@ body {
 /* } */
 
 .task h3 {
-    /* flex: jjj */
-    flex: auto;
+  /* flex: jjj */
+  flex: auto;
   margin: 4px;
-    font-size: 16px;
+  font-size: 16px;
   font-weight: 300;
   user-select: none;
 }
 
 .task-important-star {
-    /* flex: 1 1 20px; */
-    flex: none;
-    width: 18px;
-    height: 18px;
-    margin: 4px
+  /* flex: 1 1 20px; */
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 4px;
 }
 
 .task-remove-icon {
-    flex: none;
-    width: 18px;
-    height: 18px;
-    margin: 4px
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 4px;
 }
 
 /* .form-control label { */

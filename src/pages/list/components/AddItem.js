@@ -28,7 +28,7 @@ const AddItem = ({ addItemHandler }) => {
         />
       <button className="btn btn-block" type="submit">
           <FaPlus
-              style={{ color: "black", cursor: "pointer"}}
+              style={{ color: "white", cursor: "pointer"}}
           />
           </button>
       </div>
