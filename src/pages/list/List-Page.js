@@ -13,16 +13,21 @@ import AddItem from "./components/AddItem";
 
 // TODO: Should we use context? where to place context file?
 // Using Context For State
-import AppContext from "./components/Context";
+import { useContext } from "react";
+import ListContext from "./ListContext";
+import AppContext from "../../AppContext";
 
 let _viewModel = null;
+
+// TODO: Fix adding items with empty name.
 function ListApp({ userToken, onLogout }) {
+const { baseUrl } = useContext(AppContext);
   console.log(userToken);
   if (_viewModel !== null) {
       _viewModel.destructor()
       _viewModel = null
   }
-_viewModel = new ViewModel(userToken);
+_viewModel = new ViewModel(baseUrl, userToken);
 
   const addItem = (title, details, important) => {
     _viewModel.addNewItem(title, details, important);
@@ -47,12 +52,12 @@ _viewModel = new ViewModel(userToken);
       {/* > */}
         {/* Logout */}
       {/* </button> */}
-      <AppContext.Provider value={_viewModel}>
+      <ListContext.Provider value={_viewModel}>
         <ItemList
           removeItemHandler={removeItem}
           doubleClickItemHandler={toggleItemImportance}
         />
-      </AppContext.Provider>
+      </ListContext.Provider>
     </div>
   );
 }

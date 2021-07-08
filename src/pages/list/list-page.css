@@ -50,9 +50,10 @@ body {
   color: black;
   border: none;
   margin: 5px;
-  width:48px;
+  min-width:48px;
+  max-width: 48px;
   height: 48px;
-  border-radius: 32px;
+  border-radius: 50%;
   cursor: pointer;
 }
 

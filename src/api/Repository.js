@@ -17,7 +17,8 @@ class Repository {
 
   _inboundTransactionStream = new Rx.Subject();
 
-  constructor(userToken) {
+  constructor(baseUrl, userToken) {
+      this._serverAddress = baseUrl;
     this.createSocketIO(userToken);
   }
 

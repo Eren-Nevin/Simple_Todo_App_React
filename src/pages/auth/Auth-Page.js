@@ -1,6 +1,7 @@
 import "./auth-page.css";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import localforage from "localforage";
+import AppContext from "../../AppContext";
 
 // TODO: Use create instance
 const localStorage = localforage.createInstance({ name: "userToken" });
@@ -42,12 +43,12 @@ async function removeTokenLocally(token) {
   }
 }
 
-async function checkLoggedIn(token) {
+async function checkLoggedIn(baseUrl, token) {
   // const _result = await loadTokenLocally();
   // if (!_result.success) {
   //   return _result;
   // }
-  const url = "http://127.0.0.1:8833/api/check_login";
+  const url = `${baseUrl}/api/auth/check_login`;
   const data = {
     token: token,
   };
@@ -68,8 +69,8 @@ async function checkLoggedIn(token) {
   }
 }
 
-const login = async (email, password) => {
-  const url = "http://127.0.0.1:8833/api/login";
+async function login (baseUrl, email, password) {
+  const url = `${baseUrl}/api/auth/login`;
   const data = {
     email: email,
     password: password,
@@ -92,8 +93,8 @@ const login = async (email, password) => {
   }
 };
 
-const signup = async (email, password, profile) => {
-  const url = "http://127.0.0.1:8833/api/signup";
+async function signup (baseUrl, email, password, profile) {
+  const url = `${baseUrl}/api/auth/signup`;
   const data = {
     email: email,
     password: password,
@@ -117,12 +118,13 @@ const signup = async (email, password, profile) => {
 };
 
 function AuthenticateApp({ successfulAuth }) {
+    let { baseUrl } = useContext(AppContext);
   loadTokenLocally().then(({ success, token }) => {
     if (!success) {
       return;
     }
-    checkLoggedIn(token).then((_result) => {
-      if (_result) {
+    checkLoggedIn(baseUrl,token).then((_result) => {
+      if (_result){
         console.log(`Checked Login Successful With ${token}`);
         successfulAuth(token);
       }
@@ -155,6 +157,7 @@ function AuthenticateApp({ successfulAuth }) {
 }
 
 function Login({ successfulLogin, switchToSignup }) {
+    const { baseUrl } = useContext(AppContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -165,7 +168,7 @@ function Login({ successfulLogin, switchToSignup }) {
         className="auth-form"
         onSubmit={async (e) => {
           e.preventDefault();
-          const { message, success } = await login(email, password);
+          const { message, success } = await login(baseUrl, email, password);
           if (success) {
             successfulLogin(message);
           } else {
@@ -221,6 +224,7 @@ function Login({ successfulLogin, switchToSignup }) {
 }
 
 function Signup({ successfulSignup, switchToLogin }) {
+    const { baseUrl } = useContext(AppContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [profile, setProfile] = useState("");
@@ -231,9 +235,9 @@ function Signup({ successfulSignup, switchToLogin }) {
       className="auth-form"
       onSubmit={async (e) => {
         e.preventDefault();
-        const { message, success } = await signup(email, password, profile);
+        const { message, success } = await signup(baseUrl, email, password, profile);
         if (success) {
-          const { message, success } = await login(email, password);
+          const { message, success } = await login(baseUrl, email, password);
           // We know the login would be succesful after signup but we still
           // check for success for rare cases (Defensive Programming).
           if (success) {

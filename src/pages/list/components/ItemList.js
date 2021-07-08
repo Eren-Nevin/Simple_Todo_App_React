@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useContext } from "react";
-import AppContext from "./Context";
+import ListContext from "../ListContext";
 import ListItem from "./ListItem.js";
 
 const ItemList = ({ removeItemHandler, doubleClickItemHandler }) => {
-  const _viewModel = useContext(AppContext);
+  const _viewModel = useContext(ListContext);
   const [itemList, setItemList] = useState([]);
 
   // Start Listening On Transactions Of Items.

@@ -16,9 +16,9 @@ _repositoryItemRemovedSubscription;
 _repositoryItemChangedSubscription;
 _repositoryResetSubscription;
 
-  constructor(userToken) {
+  constructor(baseUrl, userToken) {
     console.log("ViewModel is Created!");
-    this._repository = new Repository(userToken);
+    this._repository = new Repository(baseUrl, userToken);
     this._startListeningOnRepository();
     this._repository.start();
   }
